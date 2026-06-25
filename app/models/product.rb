@@ -8,6 +8,6 @@ class Product < ApplicationRecord
 
   validates :image_url, presence: true
 
-  validates :stock_quantity,
-            numericality: { greater_than_or_equal_to: 0 }
+  validates :stock_quantity, presence: true,
+                           numericality: { greater_than_or_equal_to: 0 }
 end
