@@ -1,13 +1,30 @@
 class ProductsController < ApplicationController
-      def index
-        products = Product.all
+  def index
+    products = Product.includes(:category)
 
-        render json: products
-      end
+    if params[:category].present?
+      products = products.joins(:category)
+                        .where(categories: { name: params[:category] })
+    end
 
-      def show
-        product = Product.find(params[:id])
+    render json: products.as_json(
+      include: {
+        category: {
+          only: [ :name ]
+        }
+      }
+    )
+  end
 
-        render json: product
-      end
+  def show
+    product = Product.includes(:category).find(params[:id])
+
+    render json: product.as_json(
+      include: {
+        category: {
+          only: [ :name ]
+        }
+      }
+    )
+  end
 end
