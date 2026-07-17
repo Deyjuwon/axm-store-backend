@@ -13,7 +13,7 @@ class ProductsController < ApplicationController
     render json: products.as_json(
       include: {
         category: {
-          only: [:name]
+          only: [ :name ]
         }
       }
     )
@@ -25,7 +25,7 @@ class ProductsController < ApplicationController
     render json: product.as_json(
       include: {
         category: {
-          only: [:name]
+          only: [ :name ]
         }
       }
     )
