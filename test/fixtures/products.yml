@@ -1,15 +1,17 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  name: MyString
-  description: MyText
-  price: 9.99
-  image_url: MyString
-  stock_quantity: 1
+  name: Male Aso Oke
+  description: Traditional male Aso Oke
+  price: 100000.00
+  image_url: /products/men/mpro1.svg
+  stock_quantity: 10
+  category: one
 
 two:
-  name: MyString
-  description: MyText
-  price: 9.99
-  image_url: MyString
-  stock_quantity: 1
+  name: Female Aso Oke
+  description: Traditional female Aso Oke
+  price: 120000.00
+  image_url: /products/women/wpro1.svg
+  stock_quantity: 5
+  category: two
