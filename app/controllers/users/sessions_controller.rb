@@ -9,7 +9,10 @@ class Users::SessionsController < Devise::SessionsController
         code: 200,
         message: "Logged in successfully."
       },
-      user: current_user
+      user: {
+          id: current_user.id,
+          email: current_user.email
+        }
     }, status: :ok
   end
 

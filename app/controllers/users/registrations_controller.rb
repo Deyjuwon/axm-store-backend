@@ -10,7 +10,10 @@ class Users::RegistrationsController < Devise::RegistrationsController
           code: 201,
           message: "Signed up successfully."
         },
-        user: user
+        user: {
+          id: user.id,
+          email: user.email
+        }
       }, status: :created
     else
       render json: {
