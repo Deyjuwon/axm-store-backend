@@ -16,12 +16,10 @@ class CartsController < ApplicationController
             image_url: item.product.image_url
           },
           quantity: item.quantity,
-          subtotal: item.product.price * item.quantity
+          subtotal: item.subtotal
         }
       end,
-      total_price: cart.cart_items.sum do |item|
-        item.product.price * item.quantity
-      end
+      total_price: cart.total_price
     }
   end
 end
