@@ -1,72 +1,46 @@
 class CartItemsController < ApplicationController
   before_action :authenticate_user!
+  before_action :set_cart_item, only: [ :update, :destroy ]
 
-    def create
-      cart = current_user.cart || current_user.create_cart
-      product = Product.find(params[:product_id])
+  def create
+    cart = current_user.cart || current_user.create_cart
+    product = Product.find(params[:product_id])
 
-      cart_item = cart.cart_items.find_by(product: product)
+    result = CartItems::AddToCart.new(cart, product, cart_item_quantity).call
 
-      if cart_item
-        new_quantity = cart_item.quantity + cart_item_quantity
-
-        if new_quantity > product.stock_quantity
-          return render json: {
-            error: "Not enough stock available"
-          }, status: :unprocessable_entity
-        end
-
-        cart_item.update!(quantity: new_quantity)
-      else
-        if cart_item_quantity > product.stock_quantity
-          return render json: {
-            error: "Not enough stock available"
-          }, status: :unprocessable_entity
-        end
-
-        cart_item = cart.cart_items.create!(
-          product: product,
-          quantity: cart_item_quantity
-        )
-      end
-
-      render json: cart_item, status: :created
+    if result[:ok]
+      status = result[:action] == :created ? :created : :ok
+      render json: result[:cart_item], status: status
+    else
+      render json: { error: result[:error] }, status: :unprocessable_entity
     end
+  end
 
   def update
-    cart_item = current_user.cart.cart_items.find(params[:id])
-    product = cart_item.product
-    quantity = cart_item_quantity
+    result = CartItems::UpdateCartItem.new(@cart_item, cart_item_quantity).call
 
-    if quantity > product.stock_quantity
-      return render json: {
-        error: "Not enough stock available"
-      }, status: :unprocessable_entity
+    if result[:ok]
+      if result[:action] == :removed
+        render json: { message: "Cart item removed successfully." }, status: :ok
+      else
+        render json: result[:cart_item], status: :ok
+      end
+    else
+      render json: { error: result[:error] }, status: :unprocessable_entity
     end
-
-    if quantity == 0
-      cart_item.destroy!
-      return render json: {
-        message: "Cart item removed successfully."
-      }, status: :ok
-    end
-
-    cart_item.update!(quantity: quantity)
-
-    render json: cart_item, status: :ok
   end
 
   def destroy
-    cart_item = current_user.cart.cart_items.find(params[:id])
+    CartItems::RemoveCartItem.new(@cart_item).call
 
-    cart_item.destroy!
-
-    render json: {
-      message: "Cart item removed successfully."
-    }, status: :ok
+    render json: { message: "Cart item removed successfully." }, status: :ok
   end
 
   private
+
+  def set_cart_item
+    @cart_item = current_user.cart.cart_items.find(params[:id])
+  end
 
   def cart_item_quantity
     params.require(:quantity).to_i
