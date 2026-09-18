@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get "/cart", to: "carts#show"
   devise_for :users,
   defaults: { format: :json },
   controllers: {
@@ -7,6 +8,7 @@ Rails.application.routes.draw do
   }
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   resources :products, only: [ :index, :show ]
+  resources :cart_items, only: [ :create, :update, :destroy ]
 
   namespace :api do
     get "protected", to: "protected#index"
